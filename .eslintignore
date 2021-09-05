@@ -1,0 +1,3 @@
+lib/**/*.test.ts
+lib/**/files/**
+test/**
