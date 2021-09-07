@@ -5,11 +5,11 @@ import * as os from 'os';
 import { SeqLogLevel, SeqEvent } from 'seq-logging';
 
 /**
- * Jasonsoft Seq Logger Service
+ * JasonSoft Seq Logger Service
  * Added by Jason.Song (成长的小猪) on 2021/07/05 16:59:39
  */
  @Injectable()
-export class JasonsoftSeqService {
+export class JasonSoftSeqService {
   constructor(@Inject(JASONSOFT_SEQ_LOGGER) private readonly seqLogger: SeqLogger) {}
 
   public verbose(messageTemplate: string, properties?: object) {

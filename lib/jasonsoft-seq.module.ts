@@ -2,17 +2,17 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { Logger } from 'seq-logging';
 import { SeqModuleOptions, SeqLogger } from './interfaces';
 import { JASONSOFT_SEQ_LOGGER } from './jasonsoft-seq.constants';
-import { JasonsoftSeqService } from './jasonsoft-seq.service';
+import { JasonSoftSeqService } from './jasonsoft-seq.service';
 
 /**
- * Jasonsoft Seq logger Module
+ * JasonSoft Seq logger Module
  * Added by Jason.Song (成长的小猪) on 2021/07/05 16:44:10
  */
 @Module({})
-export class JasonsoftSeqModule {
+export class JasonSoftSeqModule {
   static forRoot(options: SeqModuleOptions): DynamicModule {
     return {
-      module: JasonsoftSeqModule,
+      module: JasonSoftSeqModule,
       global: options.isGlobal,
       providers: [
         {
@@ -24,16 +24,16 @@ export class JasonsoftSeqModule {
                 serverUrl: options.serverUrl,
                 apiKey: options.apiKey,
                 onError: function (e: Error) {
-                  console.error('[Jasonsoft-Seq] Log batch failed\n', e);
+                  console.error('[JasonSoft-Seq] Log batch failed\n', e);
                 },
               }),
             };
             return seqLogger;
           },
         },
-        JasonsoftSeqService,
+        JasonSoftSeqService,
       ],
-      exports: [JasonsoftSeqService],
+      exports: [JasonSoftSeqService],
     };
   }
 }
