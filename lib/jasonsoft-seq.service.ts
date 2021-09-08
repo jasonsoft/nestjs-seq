@@ -58,7 +58,7 @@ export class JasonSoftSeqService {
       properties: {
         serviceName: this.seqLogger.serviceName,
         hostname: os.hostname(),
-        properties: { ...props },
+        ...props,
       },
       exception: stack ? stack : undefined,
     };
