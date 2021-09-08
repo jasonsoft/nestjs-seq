@@ -88,12 +88,14 @@ export class AppController {
   @Get()
   getHello(): string {
     this.logger.info('getHello - start');
+
     const result = this.appService.getHello();
     this.logger.info('getHello - call {service}', {
       service: 'appService',
       result,
       remark: 'Record the returned result',
     });
+
     try {
       throw new Error('Wow, I reported an error');
     } catch (error) {
@@ -105,9 +107,9 @@ export class AppController {
 
 ```
 
-### Log rendering
+### Seq
 
-> Let's take a look at the final log recording effect chart
+> Seq is a centralized log file with superpowers. Check out the logs we collected
 
 ![log rendering](https://github.com/jasonsoft/nestjs-seq/raw/main/rendering.jpg)
 
