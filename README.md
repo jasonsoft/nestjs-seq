@@ -109,7 +109,7 @@ export class AppController {
 
 > Let's take a look at the final log recording effect chart
 
-![log rendering](/rendering.jpg)
+![log rendering](https://github.com/jasonsoft/nestjs-seq/raw/main/rendering.jpg)
 
 [npm-img]: https://img.shields.io/npm/v/@jasonsoft/nestjs-seq.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/@jasonsoft/nestjs-seq
