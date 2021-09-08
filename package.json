@@ -1,8 +1,13 @@
 {
   "name": "@jasonsoft/nestjs-seq",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Seq logging module for Nest framework (node.js)",
   "scripts": {
+    "build": "rimraf -rf dist && tsc -p tsconfig.json",
+    "format": "prettier **/**/*.ts --ignore-path ./.prettierignore --write",
+    "lint": "eslint 'lib/**/*.ts' --fix",
+    "prepublish:npm": "npm run build",
+    "publish:npm": "npm publish --access public",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
