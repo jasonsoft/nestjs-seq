@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://github.com/jasonsoft/" target="blank"><img src="https://avatars.githubusercontent.com/u/90173752?s=200&v=4" width="120" alt="JasonSoft Logo" /></a>
   <a href="http://nestjs.com/" target="blank"><img src="https://avatars.githubusercontent.com/u/28507035?s=200&v=4" width="120" alt="Nest Logo" /></a>
-  <a href="https://datalust.co/" target="blank"><img src="https://datalust.co/img/seq-logo-light.svg" height="120"  alt="datalust Logo" /></a>
+  <a href="https://datalust.co/" target="blank"><img src="https://datalust.co/img/seq-logo-dark.svg" height="120"  alt="datalust Logo" /></a>
 </p>
 
 # nestjs-seq
