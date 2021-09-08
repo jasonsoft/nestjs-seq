@@ -1,6 +1,6 @@
 {
   "name": "@jasonsoft/nestjs-seq",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Seq logging module for Nest framework (node.js)",
   "scripts": {
     "build": "rimraf -rf dist && tsc -p tsconfig.json",
