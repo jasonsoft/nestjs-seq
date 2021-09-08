@@ -4,9 +4,8 @@
   <a href="https://datalust.co/" target="blank"><img src="https://avatars.githubusercontent.com/u/5898109?s=200&v=4" width="120" alt="datalust Logo" /></a>
 </p>
 
+# nestjs-seq
 
-nestjs-seq
-=================
 Seq logging module for Nest framework (node.js)
 
 [![NPM version][npm-img]][npm-url]
@@ -22,16 +21,99 @@ Seq logging module for Nest framework (node.js)
 $ npm i --save @jasonsoft/nestjs-seq
 ```
 
+### Quick Start
+
+> Once the installation process is complete, we can import the JasonSoftSeqModule into the root AppModule.
+
+```js
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+/**
+ * Import the JasonSoftSeqModule into the root AppModule
+ * Added by Jason.Song (成长的小猪) on 2021/09/08 12:43:30
+ */
+import { JasonSoftSeqModule } from '@jasonsoft/nestjs-seq';
+
+@Module({
+  imports: [
+    /**
+     * we can import the JasonSoftSeqModule. Typically, we'll import it into the root AppModule and control its behavior using the .forRoot() static method.
+     * Added by Jason.Song (成长的小猪) on 2021/09/08 12:43:07
+     */
+    JasonSoftSeqModule.forRoot({
+      /** Customize a log name to facilitate log filtering */
+      serviceName: 'product-service',
+      /** The HTTP endpoint address of the Seq server */
+      serverUrl: 'http://localhost:5341',
+      /** The API Key to use when connecting to Seq */
+      apiKey: 'K7iUhZ9OSp6oX5EOCfPt',
+      /**
+       * Use module globally
+       * When you want to use JasonSoftSeqModule in other modules,
+       * you'll need to import it (as is standard with any Nest module).
+       * Alternatively, declare it as a global module by setting the options object's isGlobal property to true, as shown below.
+       * In that case, you will not need to import JasonSoftSeqModule in other modules once it's been loaded in the root module
+       */
+      isGlobal: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+```js
+import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
+/**
+ * import the JasonSoftSeqService
+ * Added by Jason.Song (成长的小猪) on 2021/09/08 13:03:43
+ */
+import { JasonSoftSeqService } from '@jasonsoft/nestjs-seq';
+
+@Controller()
+export class AppController {
+  constructor(
+    private readonly appService: AppService,
+    /**
+     * Inject the JasonSoftSeqService logger
+     * We can also inject JasonSoftSeqService into controllers and services, etc.
+     * Added by Jason.Song (成长的小猪) on 2021/09/08 13:04:16
+     */
+    private readonly logger: JasonSoftSeqService,
+  ) {}
+
+  @Get()
+  getHello(): string {
+    this.logger.info('getHello - start');
+    const result = this.appService.getHello();
+    this.logger.info('getHello - call {service}', {
+      service: 'appService',
+      result,
+      remark: 'Record the returned result',
+    });
+    try {
+      throw new Error('Wow, I reported an error');
+    } catch (error) {
+      this.logger.error('Record the error', error);
+    }
+    return result;
+  }
+}
+
+```
+
+### Log rendering
+
+> Let's take a look at the final log recording effect chart
+
+![log rendering](/rendering.jpg)
 
 [npm-img]: https://img.shields.io/npm/v/@jasonsoft/nestjs-seq.svg?style=flat-square
-
 [npm-url]: https://npmjs.org/package/@jasonsoft/nestjs-seq
-
 [license-img]: https://img.shields.io/badge/license-MIT-green.svg?style=flat-square
-
 [license-url]: LICENSE
-
-
 [downloads-image]: https://img.shields.io/npm/dt/@jasonsoft/nestjs-seq.svg?style=flat-square
-
 [project-icon]: https://avatars.githubusercontent.com/u/22167571?v=4
