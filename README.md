@@ -39,7 +39,7 @@ import { JasonSoftSeqModule } from '@jasonsoft/nestjs-seq';
   imports: [
     /**
      * we can import the JasonSoftSeqModule. Typically, we'll import it into the root AppModule and control its behavior using the .forRoot() static method.
-     * Added by Jason.Song (成长的小猪) on 2021/09/08 12:43:07
+     * Added by Jason.Song (成长的小猪) on 2021/09/08
      */
     JasonSoftSeqModule.forRoot({
       /** Customize a log name to facilitate log filtering */
