@@ -31,7 +31,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 /**
  * Import the JasonSoftSeqModule into the root AppModule
- * Added by Jason.Song (成长的小猪) on 2021/09/08 12:43:30
+ * Added by Jason.Song (成长的小猪) on 2021/09/08
  */
 import { JasonSoftSeqModule } from '@jasonsoft/nestjs-seq';
 
@@ -69,7 +69,7 @@ import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 /**
  * import the JasonSoftSeqService
- * Added by Jason.Song (成长的小猪) on 2021/09/08 13:03:43
+ * Added by Jason.Song (成长的小猪) on 2021/09/08
  */
 import { JasonSoftSeqService } from '@jasonsoft/nestjs-seq';
 
@@ -80,7 +80,7 @@ export class AppController {
     /**
      * Inject the JasonSoftSeqService logger
      * We can also inject JasonSoftSeqService into controllers and services, etc.
-     * Added by Jason.Song (成长的小猪) on 2021/09/08 13:04:16
+     * Added by Jason.Song (成长的小猪) on 2021/09/08
      */
     private readonly logger: JasonSoftSeqService,
   ) {}
