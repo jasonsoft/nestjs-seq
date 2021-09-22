@@ -1,24 +1,24 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { Logger } from 'seq-logging';
-import { SeqModuleOptions, SeqLogger } from './interfaces';
-import { JASONSOFT_SEQ_LOGGER } from './jasonsoft-seq.constants';
-import { JasonSoftSeqService } from './jasonsoft-seq.service';
+import { SeqLoggerModuleOptions, SeqLogger } from './interfaces';
+import { JASONSOFT_SEQ_LOGGER } from './seq-logger.constants';
+import { SeqLoggerService } from './seq-logger.service';
 
 /**
  * JasonSoft Seq logger Module
  * Added by Jason.Song (成长的小猪) on 2021/07/05 16:44:10
  */
 @Module({})
-export class JasonSoftSeqModule {
-  static forRoot(options: SeqModuleOptions): DynamicModule {
+export class SeqLoggerModule {
+  static forRoot(options: SeqLoggerModuleOptions): DynamicModule {
     return {
-      module: JasonSoftSeqModule,
+      module: SeqLoggerModule,
       global: options.isGlobal,
       providers: [
         {
           provide: JASONSOFT_SEQ_LOGGER,
           useFactory: () => {
-            const seqLogger:SeqLogger = {
+            const seqLogger: SeqLogger = {
               serviceName: options.serviceName,
               logger: new Logger({
                 serverUrl: options.serverUrl,
@@ -31,9 +31,9 @@ export class JasonSoftSeqModule {
             return seqLogger;
           },
         },
-        JasonSoftSeqService,
+        SeqLoggerService,
       ],
-      exports: [JasonSoftSeqService],
+      exports: [SeqLoggerService],
     };
   }
 }

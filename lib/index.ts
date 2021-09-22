@@ -1,3 +1,3 @@
-export * from './jasonsoft-seq.module';
-export * from './jasonsoft-seq.service';
+export * from './seq-logger.module';
+export * from './seq-logger.service';
 export * from './interfaces';

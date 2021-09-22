@@ -30,18 +30,18 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 /**
- * Import the JasonSoftSeqModule into the root AppModule
+ * Import the SeqLoggerModule into the root AppModule
  * Added by Jason.Song (成长的小猪) on 2021/09/08
  */
-import { JasonSoftSeqModule } from '@jasonsoft/nestjs-seq';
+import { SeqLoggerModule } from '@jasonsoft/nestjs-seq';
 
 @Module({
   imports: [
     /**
-     * we can import the JasonSoftSeqModule. Typically, we'll import it into the root AppModule and control its behavior using the .forRoot() static method.
+     * we can import the SeqLoggerModule. Typically, we'll import it into the root AppModule and control its behavior using the .forRoot() static method.
      * Added by Jason.Song (成长的小猪) on 2021/09/08
      */
-    JasonSoftSeqModule.forRoot({
+    SeqLoggerModule.forRoot({
       /** Customize a log name to facilitate log filtering */
       serviceName: 'product-service',
       /** The HTTP endpoint address of the Seq server */
@@ -50,10 +50,10 @@ import { JasonSoftSeqModule } from '@jasonsoft/nestjs-seq';
       apiKey: 'K7iUhZ9OSp6oX5EOCfPt',
       /**
        * Use module globally
-       * When you want to use JasonSoftSeqModule in other modules,
+       * When you want to use SeqLoggerModule in other modules,
        * you'll need to import it (as is standard with any Nest module).
        * Alternatively, declare it as a global module by setting the options object's isGlobal property to true, as shown below.
-       * In that case, you will not need to import JasonSoftSeqModule in other modules once it's been loaded in the root module
+       * In that case, you will not need to import SeqLoggerModule in other modules once it's been loaded in the root module
        */
       isGlobal: true,
     }),
@@ -68,21 +68,21 @@ export class AppModule {}
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 /**
- * import the JasonSoftSeqService
+ * import the SeqLoggerService
  * Added by Jason.Song (成长的小猪) on 2021/09/08
  */
-import { JasonSoftSeqService } from '@jasonsoft/nestjs-seq';
+import { SeqLoggerService } from '@jasonsoft/nestjs-seq';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     /**
-     * Inject the JasonSoftSeqService logger
-     * We can also inject JasonSoftSeqService into controllers and services, etc.
+     * Inject the SeqLoggerService logger
+     * We can also inject SeqLoggerService into controllers and services, etc.
      * Added by Jason.Song (成长的小猪) on 2021/09/08
      */
-    private readonly logger: JasonSoftSeqService,
+    private readonly logger: SeqLoggerService,
   ) {}
 
   @Get()

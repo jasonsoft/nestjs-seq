@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SeqLogger } from './interfaces';
-import { JASONSOFT_SEQ_LOGGER } from './jasonsoft-seq.constants';
+import { JASONSOFT_SEQ_LOGGER } from './seq-logger.constants';
 import * as os from 'os';
 import { SeqLogLevel, SeqEvent } from 'seq-logging';
 
@@ -9,32 +9,32 @@ import { SeqLogLevel, SeqEvent } from 'seq-logging';
  * Added by Jason.Song (成长的小猪) on 2021/07/05 16:59:39
  */
 @Injectable()
-export class JasonSoftSeqService {
+export class SeqLoggerService {
   constructor(
     @Inject(JASONSOFT_SEQ_LOGGER) private readonly seqLogger: SeqLogger,
   ) {}
 
-  public verbose(messageTemplate: string, properties?: object) {
+  public verbose(messageTemplate: string, properties?: object): void {
     this.commit('Verbose', messageTemplate, properties);
   }
 
-  public debug(messageTemplate: string, properties?: object) {
+  public debug(messageTemplate: string, properties?: object): void {
     this.commit('Debug', messageTemplate, properties);
   }
 
-  public info(messageTemplate: string, properties?: object) {
+  public info(messageTemplate: string, properties?: object): void {
     this.commit('Information', messageTemplate, properties);
   }
 
-  public warn(messageTemplate: string, properties?: object) {
+  public warn(messageTemplate: string, properties?: object): void {
     this.commit('Warning', messageTemplate, properties);
   }
 
-  public error(messageTemplate: string, properties?: object | Error) {
+  public error(messageTemplate: string, properties?: object | Error): void {
     this.commit('Error', messageTemplate, properties);
   }
 
-  public fatal(messageTemplate: string, properties?: object) {
+  public fatal(messageTemplate: string, properties?: object): void {
     this.commit('Fatal', messageTemplate, properties);
   }
 
@@ -50,7 +50,7 @@ export class JasonSoftSeqService {
     messageTemplate: string,
     properties?: any,
   ) {
-    let { stack, ...props } = properties || {};
+    const { stack, ...props } = properties || {};
     const seqEvent: SeqEvent = {
       timestamp: new Date(),
       level,
