@@ -23,7 +23,7 @@ $ npm i --save @jasonsoft/nestjs-seq
 
 ### Quick Start
 
-> Once the installation process is complete, we can import the JasonSoftSeqModule into the root AppModule.
+> Once the installation process is complete, we can import the SeqLoggerModule into the root AppModule.
 
 ```js
 import { Module } from '@nestjs/common';
