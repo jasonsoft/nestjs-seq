@@ -68,21 +68,21 @@ export class AppModule {}
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 /**
- * import the SeqLoggerService
+ * import the SeqLogger
  * Added by Jason.Song (成长的小猪) on 2021/09/08
  */
-import { SeqLoggerService } from '@jasonsoft/nestjs-seq';
+import { SeqLogger } from '@jasonsoft/nestjs-seq';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     /**
-     * Inject the SeqLoggerService logger
-     * We can also inject SeqLoggerService into controllers and services, etc.
+     * Inject the SeqLogger logger
+     * We can also inject SeqLogger into controllers and services, etc.
      * Added by Jason.Song (成长的小猪) on 2021/09/08
      */
-    private readonly logger: SeqLoggerService,
+    private readonly logger: SeqLogger,
   ) {}
 
   @Get()
