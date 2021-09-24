@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SeqLogger } from './interfaces';
+import { SeqLoggerOptions } from './interfaces';
 import { JASONSOFT_SEQ_LOGGER } from './seq-logger.constants';
 import * as os from 'os';
 import { SeqLogLevel, SeqEvent } from 'seq-logging';
@@ -9,9 +9,10 @@ import { SeqLogLevel, SeqEvent } from 'seq-logging';
  * Added by Jason.Song (成长的小猪) on 2021/07/05 16:59:39
  */
 @Injectable()
-export class SeqLoggerService {
+export class SeqLogger {
   constructor(
-    @Inject(JASONSOFT_SEQ_LOGGER) private readonly seqLogger: SeqLogger,
+    @Inject(JASONSOFT_SEQ_LOGGER)
+    private readonly seqLoggerOptions: SeqLoggerOptions,
   ) {}
 
   public verbose(messageTemplate: string, properties?: object): void {
@@ -50,20 +51,21 @@ export class SeqLoggerService {
     messageTemplate: string,
     properties?: any,
   ) {
-    const { stack, ...props } = properties || {};
+    const { stack, logger, ...props } = properties || {};
     const seqEvent: SeqEvent = {
       timestamp: new Date(),
       level,
       messageTemplate,
       properties: {
-        serviceName: this.seqLogger.serviceName,
+        serviceName: this.seqLoggerOptions.serviceName,
         hostname: os.hostname(),
+        logger: logger || 'seq',
         ...props,
       },
       exception: stack ? stack : undefined,
     };
     try {
-      this.seqLogger.logger.emit(seqEvent);
+      this.seqLoggerOptions.logger.emit(seqEvent);
     } catch (error) {
       console.error(error, seqEvent);
     }
