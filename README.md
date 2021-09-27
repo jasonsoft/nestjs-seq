@@ -12,9 +12,6 @@ Seq logging module for Nest framework (node.js) 🐷
 [![NPM Downloads][downloads-image]][npm-url]
 [![License][license-img]][license-url]
 
-[![NPM](https://nodei.co/npm/@jasonsoft/nestjs-seq.png?stars&downloads)](https://nodei.co/npm/@jasonsoft/nestjs-seq/)
-[![NPM](https://nodei.co/npm-dl/@jasonsoft/nestjs-seq.png)](https://nodei.co/npm/@jasonsoft/nestjs-seq/)
-
 ### Installation
 
 ```bash
