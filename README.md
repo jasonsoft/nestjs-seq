@@ -110,6 +110,8 @@ export class AppController {
 
 ![log rendering](https://github.com/jasonsoft/nestjs-seq/raw/main/rendering.jpg)
 
+### [Example](https://github.com/jasonsoft-net/nestjs-seq-example)
+
 [npm-img]: https://img.shields.io/npm/v/@jasonsoft/nestjs-seq.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/@jasonsoft/nestjs-seq
 [license-img]: https://img.shields.io/badge/license-MIT-green.svg?style=flat-square
