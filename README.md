@@ -62,6 +62,27 @@ export class AppModule {}
 ```
 
 ```js
+/**
+ * Async configuration
+ * When you need to pass module options asynchronously instead of statically, use the forRootAsync() method.
+ * Like other factory providers, our factory function can be async and can inject dependencies through inject.
+ * Added by Jason.Song (成长的小猪) on 2021/10/20 11:30:45
+ */
+SeqLoggerModule.forRootAsync({
+  imports: [ConfigModule],
+  useFactory: async (configService: ConfigService) => ({
+    /** Customize a log name to facilitate log filtering */
+    serviceName: configService.get('SEQ_SERVICE_NAME'),
+    /** The HTTP endpoint address of the Seq server */
+    serverUrl: configService.get('SEQ_SERVER_URL'),
+    /** The API Key to use when connecting to Seq */
+    apiKey: configService.get('SEQ_API_KEY'),
+  }),
+  inject: [ConfigService],
+}),
+```
+
+```js
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 /**
@@ -110,7 +131,9 @@ export class AppController {
 
 ![log rendering](https://github.com/jasonsoft/nestjs-seq/raw/main/rendering.jpg)
 
-### [Example](https://github.com/jasonsoft-net/nestjs-seq-example)
+### Example
+
+[https://github.com/jasonsoft-net/nestjs-seq-example](https://github.com/jasonsoft-net/nestjs-seq-example)
 
 [npm-img]: https://img.shields.io/npm/v/@jasonsoft/nestjs-seq.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/@jasonsoft/nestjs-seq
