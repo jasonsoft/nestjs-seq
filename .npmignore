@@ -6,6 +6,9 @@ package-lock.json
 tslint.json
 tsconfig.json
 .prettierrc
+.eslintignore
+.eslintrc.js
+.vscode
 
 # github
 .github

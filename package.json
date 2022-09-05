@@ -30,18 +30,18 @@
   },
   "homepage": "https://github.com/jasonsoft/nestjs-seq#readme",
   "dependencies": {
-    "seq-logging": "^1.1.1"
+    "seq-logging": "1.1.1"
   },
   "devDependencies": {
-    "@types/node": "^16.11.48",
-    "@typescript-eslint/eslint-plugin": "^5.33.0",
-    "@typescript-eslint/parser": "^5.33.0",
-    "eslint": "^8.22.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.7.1",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.7.4"
+    "@types/node": "16.11.56",
+    "@typescript-eslint/eslint-plugin": "5.35.1",
+    "@typescript-eslint/parser": "5.35.1",
+    "eslint": "8.23.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "prettier": "2.7.1",
+    "rimraf": "3.0.2",
+    "typescript": "4.7.4"
   },
   "peerDependencies": {
     "@nestjs/common": "^6.10.11 || ^7.0.0 || ^8.0.0 || ^9.0.0"
