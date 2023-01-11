@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { SeqLoggerOptions } from './interfaces';
 import { JASONSOFT_SEQ_LOGGER } from './seq-logger.constants';
 import * as os from 'os';
@@ -9,7 +9,7 @@ import { SeqLogLevel, SeqEvent } from 'seq-logging';
  * Added by Jason.Song (成长的小猪) on 2021/07/05 16:59:39
  */
 @Injectable()
-export class SeqLogger {
+export class SeqLogger implements OnApplicationShutdown {
   constructor(
     @Inject(JASONSOFT_SEQ_LOGGER)
     private readonly seqLoggerOptions: SeqLoggerOptions,
@@ -69,5 +69,15 @@ export class SeqLogger {
     } catch (error) {
       console.error(error, seqEvent);
     }
+  }
+
+  /**
+   * When the application exits, logger.close() ensures all buffered events are written.
+   * Added by Jason.Song (成长的小猪) on 2023/01/11 14:14:13
+   * @param signal
+   */
+  onApplicationShutdown(signal?: string) {
+    console.log(signal);
+    this.seqLoggerOptions.logger.close();
   }
 }
