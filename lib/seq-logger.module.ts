@@ -50,7 +50,7 @@ export class SeqLoggerModule {
         serverUrl: options.serverUrl,
         apiKey: options.apiKey,
         onError: function (e: Error) {
-          console.error('[JasonSoft-Seq] Log batch failed\n', e);
+          console.error('[jasonsoft/nestjs-seq] Log batch failed\n', e);
         },
       }),
     };
