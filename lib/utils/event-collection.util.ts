@@ -21,7 +21,7 @@ export class EventCollection<T> {
   public remove(event: T | number) {
     const index =
       typeof event === 'number' ? event : this.collection.indexOf(event);
-    if (index >= 0) {
+    if (index >= 0 && index < this.collection.length) {
       this.collection.splice(index, 1);
     }
   }

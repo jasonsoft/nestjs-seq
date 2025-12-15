@@ -45,8 +45,23 @@ export class SeqLoggerModule {
    * For additional properties and configuration options, refer to the Seq Logger Options Documentation:
    * [Seq Logger Options Documentation](https://github.com/jasonsoft/nestjs-seq/blob/v2.x.x/SEQ_LOGGER_OPTIONS.md)
    * @returns A DynamicModule that NestJS can use to register the Seq Logger service globally, based on the provided configuration.
+   * @throws Error if required configuration options are missing or invalid.
    */
   static forRoot(options: SeqLoggerModuleOptions): DynamicModule {
+    if (options.serverUrl !== undefined) {
+      if (typeof options.serverUrl !== 'string') {
+        throw new Error(
+          'SeqLoggerModule: serverUrl must be a string when provided',
+        );
+      }
+      try {
+        new URL(options.serverUrl);
+      } catch {
+        throw new Error(
+          `SeqLoggerModule: Invalid serverUrl format: ${options.serverUrl}`,
+        );
+      }
+    }
     return {
       module: SeqLoggerModule,
       global: defaultIfNullOrUndefined(options.isGlobal, true),
@@ -119,12 +134,28 @@ export class SeqLoggerModule {
   }
 
   private static createSeqLogger(options: SeqLoggerModuleOptions) {
+    // Validate URL format if serverUrl is provided
+    if (options.serverUrl !== undefined) {
+      if (typeof options.serverUrl !== 'string') {
+        throw new Error(
+          'SeqLoggerModule: serverUrl must be a string when provided',
+        );
+      }
+      try {
+        new URL(options.serverUrl);
+      } catch {
+        throw new Error(
+          `SeqLoggerModule: Invalid serverUrl format: ${options.serverUrl}`,
+        );
+      }
+    }
+
     logToConsole('log', 'Seq logger is initializing...');
     const seqLogger = new SeqLoggerCore(options);
     seqLogger.emit({
       Timestamp: new Date(),
       Level: SeqLevel.Information,
-      MessageTemplate: `[{context}] Seq logger is initializing...`,
+      MessageTemplate: `[{context}] Seq logger initialized`,
       Properties: {
         context: 'jasonsoft/nestjs-seq',
         [seqLogger.options.metaFieldName]: seqLogger.metaProperties,

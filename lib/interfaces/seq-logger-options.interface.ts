@@ -81,4 +81,11 @@ export interface SeqLoggerOptions {
    * - When an array of LogLevel is provided, only the log levels in this array are allowed to be recorded.
    */
   logLevels?: LogLevel | LogLevel[];
+
+  /**
+   * Array of sensitive key patterns to mask in log output.
+   * Keys containing these patterns (case-insensitive) will be replaced with '[Sensitive data masked]'.
+   * Defaults to common sensitive patterns if not specified.
+   */
+  sensitiveKeys?: string[];
 }

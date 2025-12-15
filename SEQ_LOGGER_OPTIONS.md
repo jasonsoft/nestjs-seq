@@ -89,6 +89,12 @@ This configuration interface allows for detailed customization of the Seq loggin
 - **Optional**
 - **Description:** Specifies the permissible log levels for recording events. This can be a single log level, acting as the minimum threshold, or an array of log levels, specifying exactly which levels are allowed to be recorded.
 
+### `sensitiveKeys`
+
+- **Type:** `string[]`
+- **Optional**
+- **Description:** Specifies an array of sensitive key patterns (like `"password"`, `"secret"`, `"token"`, `"apiKey"`, etc.) whose values will be masked in log outputs to prevent accidental leakage of confidential or sensitive information. This applies to all logs processed through the SeqLoggerModule.
+
 ### SeqLoggerModule Basic Configuration Example
 
 ```js
@@ -131,6 +137,8 @@ import { SeqLoggerModule } from '@jasonsoft/nestjs-seq';
       },
       /** Optional permissible log levels */
       logLevels: ['info', 'error'],
+      /** Array of sensitive key patterns to mask in log output */
+      sensitiveKeys: ['password', 'secret', 'token', 'apiKey'],
     }),
   ],
   controllers: [AppController],

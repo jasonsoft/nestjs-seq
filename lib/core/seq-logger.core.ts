@@ -4,8 +4,7 @@ import { SeqEvent, SeqLoggerOptions } from '../interfaces';
 import { EventCollection } from '../utils/event-collection.util';
 import { sleep } from '../utils/sleep.util';
 import { NETWORK_ERRORS } from '../seq-logger.constants';
-import { logToConsole, safeStringify } from '../utils';
-import { SeqLevel } from '../enums';
+import { logToConsole, safeClone, safeStringify } from '../utils';
 
 /**
  * Core logger class responsible for managing and sending log events to Seq server.
@@ -40,6 +39,15 @@ export class SeqLoggerCore {
   }
 
   /**
+   * Gets the sensitive keys configuration for masking sensitive data.
+   * Added by Jason.Song (成长的小猪) on 2025/08/07 01:49:43
+   * @returns Array of sensitive key patterns
+   */
+  getSensitiveKeys(): string[] | undefined {
+    return this.options.sensitiveKeys;
+  }
+
+  /**
    * Merges user-provided options with default logger options.
    * Added by Jason.Song (成长的小猪) on 2023/11/18
    * @param options Partial configuration options for the logger.
@@ -69,7 +77,7 @@ export class SeqLoggerCore {
     if (!this.isRunning) {
       return;
     }
-    this.events.add(event);
+    this.events.add(safeClone(event));
     this.start(2000);
   }
 
@@ -99,114 +107,155 @@ export class SeqLoggerCore {
    * Added by Jason.Song (成长的小猪) on 2023/11/18
    */
   private async send(): Promise<void> {
-    const { batchPayloadLimit, eventBodyLimit } = this.options;
-    let contentLen = this.TAG_LENGTH;
-    const contentArray: string[] = [];
     while (this.events.size() > 0) {
-      const event = this.events.get(0);
-      if (!event) {
-        break;
-      }
-      let jsonStr = safeStringify(event);
-      let jsonLen = Buffer.byteLength(jsonStr);
-      if (jsonLen > eventBodyLimit) {
-        logToConsole(
-          'warn',
-          `Event body is larger than ${eventBodyLimit} bytes: ${jsonLen}`,
-        );
-        const correctEvent = this.handleLargeEvent(
-          event,
-          jsonLen,
-          eventBodyLimit,
-        );
-        jsonStr = safeStringify(correctEvent);
-        jsonLen = Buffer.byteLength(jsonStr);
-      }
-      if (contentLen + jsonLen > batchPayloadLimit) {
-        break;
-      }
-      contentArray.push(jsonStr);
-      contentLen += jsonLen;
-      this.events.remove(0);
-    }
+      const { batchPayloadLimit, eventBodyLimit, sensitiveKeys } = this.options;
+      let contentLen = this.TAG_LENGTH;
+      const contentArray: string[] = [];
+      const eventsToProcess: SeqEvent[] = [];
 
-    if (contentArray.length > 0) {
-      const content = `${this.START_TAG}${contentArray.join(',')}${
-        this.END_TAG
-      }`;
-      for (const times of [...Array(this.options.maxRetries).keys()]) {
-        try {
-          const url = `${this.options.serverUrl.replace(
-            /\/?$/,
-            '',
-          )}/api/events/raw`;
-          await axios.post(url, content, {
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Seq-ApiKey': this.options.apiKey,
-              'Content-Length': Buffer.byteLength(content),
-            },
-            timeout: this.options.timeout * 1000,
-          });
-          if (!this.isInitEvent) {
-            this.isInitEvent = true;
-            logToConsole('log', 'Seq logger initialized successfully');
-            this.emit({
-              Timestamp: new Date(),
-              Level: SeqLevel.Information,
-              MessageTemplate: `[{context}] Seq logger initialized successfully`,
-              Properties: {
-                context: 'jasonsoft/nestjs-seq',
-                [this.options.metaFieldName]: this.metaProperties,
-              },
-            });
-          }
+      while (this.events.size() > 0) {
+        const event = this.events.get(0);
+        if (!event) {
           break;
-        } catch (error: any) {
-          if (axios.isAxiosError(error)) {
-            let data = error.message;
-            if (error.response) {
-              const { status, data: body } = error.response;
-              if (body.Error) {
-                data = body.Error;
-              }
-              if (status >= 500 && status <= 599) {
-                logToConsole(
-                  'error',
-                  `Server error, retrying(${times + 1}) in ${this.options.delay} seconds`,
-                );
-                if (times < this.options.maxRetries - 1) {
-                  await sleep(this.options.delay);
-                  continue;
-                }
-              }
+        }
+        let jsonStr = safeStringify(event, {
+          sensitiveKeys,
+        });
+        let jsonLen = Buffer.byteLength(jsonStr);
+        if (jsonLen > eventBodyLimit) {
+          logToConsole(
+            'warn',
+            `Event body is larger than ${eventBodyLimit} bytes: ${jsonLen}`,
+          );
+          const correctEvent = this.handleLargeEvent(
+            event,
+            jsonLen,
+            eventBodyLimit,
+          );
+          jsonStr = safeStringify(correctEvent, {
+            sensitiveKeys,
+          });
+          jsonLen = Buffer.byteLength(jsonStr);
+        }
+        if (contentLen + jsonLen > batchPayloadLimit) {
+          break;
+        }
+        contentArray.push(jsonStr);
+        eventsToProcess.push(event);
+        contentLen += jsonLen;
+        this.events.remove(0);
+      }
+
+      if (contentArray.length > 0) {
+        const content = `${this.START_TAG}${contentArray.join(',')}${
+          this.END_TAG
+        }`;
+        let sendSuccess = false;
+
+        for (let attempt = 0; attempt < this.options.maxRetries; attempt++) {
+          try {
+            const url = `${this.options.serverUrl.replace(
+              /\/?$/,
+              '',
+            )}/api/events/raw`;
+            await axios.post(url, content, {
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Seq-ApiKey': this.options.apiKey,
+                'Content-Length': Buffer.byteLength(content),
+              },
+              timeout: this.options.timeout * 1000,
+            });
+            if (!this.isInitEvent) {
+              this.isInitEvent = true;
+              logToConsole('log', 'Seq logger initialized successfully');
             }
-            if (error.code && NETWORK_ERRORS.includes(error.code)) {
-              logToConsole(
-                'error',
-                `Network error, retrying(${times + 1}) in ${this.options.delay} seconds`,
-              );
-              if (times < this.options.maxRetries - 1) {
-                await sleep(this.options.delay);
-                continue;
-              }
+            sendSuccess = true;
+            break;
+          } catch (error: unknown) {
+            const shouldRetry = this.shouldRetry(error, attempt);
+            if (shouldRetry) {
+              await sleep(this.options.delay);
+              continue;
             }
-            logToConsole(
-              'error',
-              `Failed to send log due to: ${data || error.code}`,
-            );
-          } else {
-            logToConsole('error', error.message, error.stack);
+            this.logError(error);
+            break;
           }
+        }
+
+        if (!sendSuccess) {
+          for (let i = eventsToProcess.length - 1; i >= 0; i--) {
+            this.events.add(eventsToProcess[i]);
+          }
+          logToConsole(
+            'warn',
+            `Failed to send ${eventsToProcess.length} events after ${this.options.maxRetries} attempts. Events will be retried on next send cycle.`,
+          );
           break;
         }
       }
     }
 
-    if (this.events.size() > 0) {
-      await this.send();
+    this.stop();
+  }
+
+  /**
+   * Determines if an error should trigger a retry.
+   * @param error The error to check
+   * @param attempt Current attempt number
+   * @returns true if should retry, false otherwise
+   */
+  private shouldRetry(error: unknown, attempt: number): boolean {
+    if (attempt >= this.options.maxRetries - 1) {
+      return false;
+    }
+
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        const { status } = error.response;
+        if (status >= 500 && status <= 599) {
+          logToConsole(
+            'error',
+            `Server error, retrying(${attempt + 1}) in ${this.options.delay} seconds`,
+          );
+          return true;
+        }
+      }
+
+      if (error.code && NETWORK_ERRORS.includes(error.code)) {
+        logToConsole(
+          'error',
+          `Network error, retrying(${attempt + 1}) in ${this.options.delay} seconds`,
+        );
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Logs an error message.
+   * @param error The error to log
+   */
+  private logError(error: unknown): void {
+    if (axios.isAxiosError(error)) {
+      let data = error.message;
+      if (error.response) {
+        const { data: body } = error.response;
+        if (body && typeof body === 'object' && 'Error' in body) {
+          data = (body as { Error: string }).Error;
+        }
+      }
+      logToConsole('error', `Failed to send log due to: ${data || error.code}`);
+    } else if (error instanceof Error) {
+      const errorMessages = [error.message];
+      if (error.stack) {
+        errorMessages.push(error.stack);
+      }
+      logToConsole('error', ...errorMessages);
     } else {
-      this.stop();
+      logToConsole('error', String(error));
     }
   }
 
@@ -240,14 +289,19 @@ export class SeqLoggerCore {
 
   /**
    * Closes the logger, stopping any ongoing send processes and marking the logger as not running.
+   * Waits for all pending events to be sent before returning.
    * Added by Jason.Song (成长的小猪) on 2023/11/18
    */
-  public close() {
+  public async close(): Promise<void> {
     if (!this.isRunning) {
       logToConsole('warn', 'Logger is already closed');
       return;
     }
     this.isRunning = false;
-    this.start();
+    this.stop();
+
+    while (this.events.size() > 0) {
+      await this.send();
+    }
   }
 }
