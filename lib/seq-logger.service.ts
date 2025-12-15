@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { JASONSOFT_SEQ_LOGGER } from './seq-logger.constants';
 import { SeqLoggerCore } from './core';
-import { isPlainObject, logToConsole, safeStringify } from './utils';
+import { isPlainObject, logToConsole } from './utils';
 import { SeqEvent } from './interfaces';
 import { LOG_LEVELS_VALUES, LogLevel, SeqLevel } from './enums';
 
@@ -12,7 +12,6 @@ import { LOG_LEVELS_VALUES, LogLevel, SeqLevel } from './enums';
  */
 @Injectable()
 export class SeqLogger implements OnApplicationShutdown {
-  private static instance: SeqLogger;
   private static levelMapping = {
     verbose: SeqLevel.Verbose,
     debug: SeqLevel.Debug,
@@ -22,13 +21,8 @@ export class SeqLogger implements OnApplicationShutdown {
     error: SeqLevel.Error,
     fatal: SeqLevel.Fatal,
   };
-  constructor(
-    @Inject(JASONSOFT_SEQ_LOGGER)
-    private readonly seqLogger: SeqLoggerCore,
-  ) {
-    SeqLogger.instance = this;
-  }
 
+  private static instance: SeqLogger;
   /**
    * Retrieves the singleton instance of SeqLogger.
    * If the instance has not been initialized, it returns undefined.
@@ -52,6 +46,24 @@ export class SeqLogger implements OnApplicationShutdown {
       }
     }
     return SeqLogger.instance;
+  }
+
+  constructor(
+    @Inject(JASONSOFT_SEQ_LOGGER)
+    private readonly seqLogger: SeqLoggerCore,
+  ) {
+    if (!SeqLogger.instance) {
+      SeqLogger.instance = this;
+    }
+  }
+
+  /**
+   * Gets the sensitive keys configuration for masking sensitive data.
+   * Added by Jason.Song (成长的小猪) on 2025/01/27
+   * @returns Array of sensitive key patterns
+   */
+  getSensitiveKeys(): string[] | undefined {
+    return this.seqLogger.getSensitiveKeys();
   }
 
   /**
@@ -755,7 +767,7 @@ export class SeqLogger implements OnApplicationShutdown {
     const metaFieldName = this.seqLogger.options.metaFieldName;
     return {
       props: {
-        ...JSON.parse(safeStringify(props)),
+        ...props,
         [metaFieldName]: {
           ...this.seqLogger.metaProperties,
           logger,
@@ -801,8 +813,10 @@ export class SeqLogger implements OnApplicationShutdown {
    * Added by Jason.Song (成长的小猪) on 2023/01/11 14:14:13
    * @param signal The signal received for the shutdown.
    */
-  onApplicationShutdown(signal?: string) {
-    console.log(signal);
-    this.seqLogger.close();
+  async onApplicationShutdown(signal?: string): Promise<void> {
+    await this.seqLogger.close();
+    if (signal) {
+      logToConsole('log', `Seq logger closed by ${signal} signal`);
+    }
   }
 }

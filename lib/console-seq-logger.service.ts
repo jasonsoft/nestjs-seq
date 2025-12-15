@@ -146,7 +146,12 @@ export class ConsoleSeqLogger extends ConsoleLogger {
       (message !== null && typeof message === 'object') ||
       Array.isArray(message)
     ) {
-      const partialMessage = safeStringify(message);
+      const sensitiveKeys = this.logger.getSensitiveKeys();
+      const partialMessage = safeStringify(message, {
+        maxDepth: 10,
+        maxLength: 1024 * 1024,
+        sensitiveKeys,
+      });
       processedMessage = ` - (Object/Array detected, please expand to view) ${partialMessage.substring(0, 50)}...`;
     } else {
       processedMessage = message;
